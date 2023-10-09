@@ -9,6 +9,13 @@ export interface IDay {
   isToday: boolean;
   isLastDayOfMonth: boolean;
   isFirstDayOfMonth: boolean;
-  events: Array;
+  events: IEvent[];
   pageId: string;
+}
+
+export interface IEvent {
+  id: string;
+  isReadOnly: boolean;
+  onChangeText: (prev) => string;
+  text: string;
 }

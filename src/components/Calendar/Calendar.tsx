@@ -2,12 +2,24 @@ import { FC, useState, ReactElement, useEffect, useCallback, useContext } from '
 import styles from './Calendar.module.scss';
 import { getYear, getMonth, format } from 'date-fns';
 import Day from './components/Day/Day';
-import { IDay } from './interfaces/IDay';
-import { FiChevronUp, FiChevronDown } from 'react-icons/fi';
-import { css } from '@emotion/css';
+import { IDay } from './interfaces/day';
+import { FiChevronUp, FiChevronDown, FiCamera } from 'react-icons/fi';
 import { CalendarContext } from '../../context/CalendarContext';
-import { IHoliday } from './interfaces/IHoliday';
+import { IHoliday } from './interfaces/holiday';
 import axios from 'axios';
+import { DragDropContext } from 'react-beautiful-dnd';
+import {
+  DownloadButton,
+  Header,
+  Month,
+  UpDownWrapper,
+  Calendar as CalendarWrapper,
+  WeekDay,
+  arrowButton,
+} from './styles';
+import { downloadAsImage } from '../../utilities/downloadAsImage';
+import { css } from '@emotion/css';
+
 
 const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
@@ -19,9 +31,9 @@ const Calendar: FC = (): ReactElement => {
   const [pageId, setPageId] = useState<string>('');
   const [selectedMonth, setSelectedMonth] = useState<number>(initialMonth);
   const [holidays, setHolidays] = useState<IHoliday[]>([]);
-
   const { createNewCalendarPage, currentCalendarPage } = useContext(CalendarContext);
-  const currentPage = currentCalendarPage(pageId);
+  const [currentPage, setCurrentPage] = useState<IDay[] | null>(null);
+
   useEffect(() => {
     setPageId(createNewCalendarPage(selectedYear, selectedMonth));
   }, [selectedYear, selectedMonth]);
@@ -29,6 +41,10 @@ const Calendar: FC = (): ReactElement => {
   useEffect(() => {
     (() => axios.get(`https://date.nager.at/api/v3/PublicHolidays/${selectedYear}/UA`).then(res => setHolidays(res.data)))();
   }, [selectedMonth, selectedYear]);
+
+  useEffect(() => {
+    setCurrentPage(currentCalendarPage(pageId));
+  }, [currentCalendarPage, pageId]);
 
   const goToPrevMonth = useCallback(() => {
     if (selectedMonth === 0) {
@@ -48,35 +64,59 @@ const Calendar: FC = (): ReactElement => {
     }
   }, [selectedMonth]);
 
+  const onDragEnd = (result, currentPage, setCurrentPage) => {
+    if (!result.destination) return;
+    const { source, destination } = result;
+    if (source.droppableId !== destination.droppableId) {
+      const sourceDay = currentPage.find(d => d.id === source.droppableId);
+      const destDay = currentPage.find(d => d.id === destination.droppableId);
+      const sourceItems = [...sourceDay.events];
+      const destItems = [...destDay.events];
+      const [removed] = sourceItems.splice(source.index, 1);
+      destItems.splice(destination.index, 0, removed);
+      setCurrentPage(currentPage.map(cp => {
+        if (cp.id === source.droppableId) {
+          cp.events = sourceItems;
+        }
+        if (cp.id === destination.droppableId) {
+          cp.events = destItems;
+        }
+        return cp;
+      }));
+    } else {
+      const sourceDay = currentPage.find(d => d.id === source.droppableId);
+      const copiedEvents = [...sourceDay.events];
+      const [removed] = copiedEvents.splice(source.index, 1);
+      copiedEvents.splice(destination.index, 0, removed);
+      setCurrentPage(currentPage.map(cp => {
+        if (cp.id === source.droppableId) {
+          cp.events = copiedEvents
+        }
+        return cp;
+      }));
+    }
+  };
 
   return (
     <>
-      <div className={styles.header}>
-        <div className={css`gap: 4px;
-          display: flex`}
-        >
-          <FiChevronUp onClick={() => goToPrevMonth()} className={styles.arrowButton} />
-          <FiChevronDown onClick={() => goToNextMonth()} className={styles.arrowButton} />
-        </div>
-        <div className={styles.selectedMonth}>
-          {format(new Date(selectedYear, selectedMonth), 'MMMM yyyy')}
-        </div>
-      </div>
-
-      <div className={styles.calendar}>
-        {WEEKDAYS.map((weekday, index) => {
-          return (
-            <div key={'weekday-' + index} className={styles.weekday}>
-              {weekday}
-            </div>
-          );
-        })}
-        {
-          currentPage && currentPage?.map((day: IDay) => (
-            <Day key={day.id} {...day} pageId={pageId} holidays={holidays}/>
-          ))
-        }
-      </div>
+      <Header>
+        <UpDownWrapper>
+          <FiChevronUp onClick={() => goToPrevMonth()} className={css`${arrowButton}`} />
+          <FiChevronDown onClick={() => goToNextMonth()} className={css`${arrowButton}`} />
+        </UpDownWrapper>
+        <Month>{format(new Date(selectedYear, selectedMonth), 'MMMM yyyy')}</Month>
+        <DownloadButton onClick={() => downloadAsImage("calendar", "calendar")}><FiCamera />Calendar</DownloadButton>
+      </Header>
+      <CalendarWrapper id='calendar'>
+        {WEEKDAYS.map((weekday, index) => (
+          <WeekDay key={'weekday-' + index}>{weekday}</WeekDay>
+        ))}
+        <DragDropContext onDragEnd={(res) => onDragEnd(res, currentPage, setCurrentPage)} id='calendar'>
+          {currentPage && currentPage?.map((day: IDay) => (
+            <Day key={day.id} {...day} pageId={pageId} holidays={holidays} />
+          ))}
+        </DragDropContext>
+      </CalendarWrapper>
     </>
   );
 };
