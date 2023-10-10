@@ -17,7 +17,7 @@ export const Events = styled.div({
 
 export const Day = styled('div')`
   width: 100%;
-  height: 300px;
+  height: 20rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;

@@ -1,4 +1,4 @@
-import React, { FC, ReactElement, useContext, useEffect, useState } from 'react';
+import { FC, ReactElement, useContext, useEffect, useState } from 'react';
 import { IDay } from '../../interfaces/day';
 import { format } from 'date-fns';
 import { FiPlusCircle, FiMove } from 'react-icons/fi';
@@ -43,8 +43,6 @@ const Day: FC<IDay> = ({
     <Droppable droppableId={id}>
       {(provided) => (
         <DayWrapper
-          isCurrentMonth={isCurrentMonth}
-          isToday={isToday}
           className={`${isCurrentMonth && "currentMonth"} ${isToday && "today"}`}
           onMouseEnter={() => setShowPlusBtn(true)}
           onMouseLeave={() => setShowPlusBtn(false)}

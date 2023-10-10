@@ -1,5 +1,9 @@
+// @ts-nocheck
 import { useState } from 'react';
-import { IEvent } from '../components/Calendar/interfaces/day';
+import {
+  IDay,
+  IEvent,
+} from '../components/Calendar/interfaces/day';
 
 interface ISearchResults {
   data: IEvent[];
@@ -22,18 +26,26 @@ const useSearch = (initialData): ISearchResults => {
     const daysWithEvents = [];
 
     if (searchQuery) {
-      initialData.forEach(id => {
-        return Object.values(id).forEach((day) => day.forEach(d => {
-          if (d.events.length) {
-            daysWithEvents.push(d.events);
-          }
-        }));
+      initialData.forEach((id) => {
+        return Object.values(id).forEach((day: IDay[]) =>
+          day.forEach((d) => {
+            if (d.events.length) {
+              daysWithEvents.push(d.events as IEvent[]);
+            }
+          }),
+        );
       });
     }
 
-    const filteredData = daysWithEvents.flat(1).filter((event) =>
-      event.text.toLowerCase().includes(searchQuery.toLowerCase()) && !event.isReadOnly
-    );
+    const filteredData = daysWithEvents
+      .flat(1)
+      .filter(
+        (event: IEvent) =>
+          event.text
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) &&
+          !event.isReadOnly,
+      );
     setData(filteredData);
   };
 

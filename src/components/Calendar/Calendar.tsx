@@ -1,5 +1,4 @@
 import { FC, useState, ReactElement, useEffect, useCallback, useContext } from 'react';
-import styles from './Calendar.module.scss';
 import { getYear, getMonth, format } from 'date-fns';
 import Day from './components/Day/Day';
 import { IDay } from './interfaces/day';
@@ -113,7 +112,7 @@ const Calendar: FC = (): ReactElement => {
         {WEEKDAYS.map((weekday, index) => (
           <WeekDay key={'weekday-' + index}>{weekday}</WeekDay>
         ))}
-        <DragDropContext onDragEnd={(res) => onDragEnd(res, currentPage, setCurrentPage)} id='calendar'>
+        <DragDropContext onDragEnd={(res) => onDragEnd(res, currentPage, setCurrentPage)}>
           {currentPage && currentPage?.map((day: IDay) => (
             <Day key={day.id} {...day} pageId={pageId} holidays={holidays} />
           ))}

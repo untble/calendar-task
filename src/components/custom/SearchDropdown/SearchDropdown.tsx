@@ -1,8 +1,6 @@
-import React from 'react';
 import useSearch from '../../../hooks/useSearch';
 import './styles';
-import { SearchInput, SearchDropdownForm, SearchButton, DropdownList, ListItem } from './styles';
-import { css } from '@emotion/react';
+import { SearchInput, SearchDropdownForm, SearchButton, DropdownList, ListItem, NoResults } from './styles';
 
 const SearchDropdown = ({ initialData }) => {
   const {
@@ -30,7 +28,7 @@ const SearchDropdown = ({ initialData }) => {
           ))}
         </DropdownList>
       ) : (
-        <p className={css`margin-top: 0.75rem; color: #888`}>No results found</p>
+        <NoResults>No results found</NoResults>
       )}
     </SearchDropdownForm>
   );

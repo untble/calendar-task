@@ -64,3 +64,8 @@ export const ListItem = styled('li')`
     color: black;
   }
 `;
+
+export const NoResults = styled('p')`
+  margin-top: 0.75rem; 
+  color: #888;
+`;

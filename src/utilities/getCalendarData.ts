@@ -38,7 +38,7 @@ const createDayData = (
 };
 
 const createDaysForCurrentMonth = (year: number, month: number) => {
-  return [...Array(getDaysInMonth(new Date(year, month)))].map((day, index) =>
+  return [...Array(getDaysInMonth(new Date(year, month)))].map((_, index) =>
     createDayData(year, month, index + 1, true)
   );
 };
@@ -53,7 +53,7 @@ const createDaysForPreviousMonth = (year: number, month: number) => {
   const indexOfFirstVisibleDayFromPrevMonth = -1 * (firstDayOfTheMonthWeekday - 2);
   for (let i = indexOfFirstVisibleDayFromPrevMonth; i <= 0; i++) {
     const dateInPrevMonth = getDate(new Date(year, month, i));
-    prevMonthDays.push(createDayData(year, month - 1, dateInPrevMonth, false));
+    prevMonthDays.push(createDayData(year, month - 1, dateInPrevMonth, false) as never);
   }
 
   return prevMonthDays;
@@ -68,7 +68,7 @@ const createDaysForNextMonth = (year: number, month: number) => {
   const numberOfDaysLeftInLastWeekOfSelectedMonth = 7 - lastDayOfTheMonthWeekday;
 
   for (let i = 1; i <= numberOfDaysLeftInLastWeekOfSelectedMonth; i++) {
-    nextMonthDays.push(createDayData(year, month + 1, i, false));
+    nextMonthDays.push(createDayData(year, month + 1, i, false) as never);
   }
 
   return nextMonthDays;

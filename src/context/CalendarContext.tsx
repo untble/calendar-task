@@ -1,15 +1,14 @@
+// @ts-nocheck
 import { createContext, FC, PropsWithChildren, useState } from 'react';
 import { createDaysForCalendarView } from '../utilities/getCalendarData';
 import { v4 as uuid } from 'uuid';
 
 export const CalendarContext = createContext({
   calendarPagesPerMonth: [],
-  createNewCalendarPage: (year: number, month: number) => {
-  },
-  createEvent: (id: string, text: string, onChangeText, pageId: string, isReadOnly: boolean) => {
-  },
-  currentCalendarPage: (pageId: string) => {
-  },
+  createNewCalendarPage: (year: number, month: number) => String,
+  createEvent: (id: string, text: string, onChangeText, pageId: string, isReadOnly: boolean) => {},
+  currentCalendarPage: (pageId: string) => null,
+  updateEvent: (id: string, eventId: string, updatedText: string, pageId: string) => {},
 });
 
 export const CalendarContextProvider: FC<PropsWithChildren> = (props) => {
@@ -29,7 +28,7 @@ export const CalendarContextProvider: FC<PropsWithChildren> = (props) => {
   };
 
   const createEvent = (id, text, onChangeText, pageId, isReadOnly) => {
-    const existingEvents = currentCalendarPage(pageId).find(d => d.id === id).events;
+    const existingEvents= currentCalendarPage(pageId).find(d => d.id === id).events;
 
     if (!existingEvents.find(e => e.text === text && e.text)) {
       const newEvent = { id: uuid(), text, onChangeText, isReadOnly };

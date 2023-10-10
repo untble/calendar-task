@@ -1,3 +1,4 @@
+import { IHoliday } from './holiday';
 export interface IDay {
   id: string;
   date: Date;
@@ -11,6 +12,7 @@ export interface IDay {
   isFirstDayOfMonth: boolean;
   events: IEvent[];
   pageId: string;
+  holidays: IHoliday[];
 }
 
 export interface IEvent {
