@@ -75,7 +75,7 @@ const Day: FC<IDay> = ({
                           onChange={e => updateEvent(id, event.id, e.target.value, pageId)}
                           rows={5}
                         />
-                        {!event.isReadOnly && <FiMove className={css`cursor:pointer; color: black`} size='1.25rem' />}
+                        {!event.isReadOnly && <FiMove className={css`color: black`} size='1.25rem' />}
                       </EventContainer>
                   </div>
                 )}

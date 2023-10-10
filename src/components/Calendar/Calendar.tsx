@@ -19,6 +19,7 @@ import {
 } from './styles';
 import { downloadAsImage } from '../../utilities/downloadAsImage';
 import { css } from '@emotion/css';
+import SearchDropdown from '../custom/SearchDropdown/SearchDropdown';
 
 
 const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -31,7 +32,7 @@ const Calendar: FC = (): ReactElement => {
   const [pageId, setPageId] = useState<string>('');
   const [selectedMonth, setSelectedMonth] = useState<number>(initialMonth);
   const [holidays, setHolidays] = useState<IHoliday[]>([]);
-  const { createNewCalendarPage, currentCalendarPage } = useContext(CalendarContext);
+  const { createNewCalendarPage, currentCalendarPage, calendarPagesPerMonth } = useContext(CalendarContext);
   const [currentPage, setCurrentPage] = useState<IDay[] | null>(null);
 
   useEffect(() => {
@@ -98,7 +99,7 @@ const Calendar: FC = (): ReactElement => {
   };
 
   return (
-    <>
+    <div id='calendar'>
       <Header>
         <UpDownWrapper>
           <FiChevronUp onClick={() => goToPrevMonth()} className={css`${arrowButton}`} />
@@ -107,7 +108,8 @@ const Calendar: FC = (): ReactElement => {
         <Month>{format(new Date(selectedYear, selectedMonth), 'MMMM yyyy')}</Month>
         <DownloadButton onClick={() => downloadAsImage("calendar", "calendar")}><FiCamera />Calendar</DownloadButton>
       </Header>
-      <CalendarWrapper id='calendar'>
+      <SearchDropdown initialData={calendarPagesPerMonth} />
+      <CalendarWrapper>
         {WEEKDAYS.map((weekday, index) => (
           <WeekDay key={'weekday-' + index}>{weekday}</WeekDay>
         ))}
@@ -117,7 +119,7 @@ const Calendar: FC = (): ReactElement => {
           ))}
         </DragDropContext>
       </CalendarWrapper>
-    </>
+    </div>
   );
 };
 

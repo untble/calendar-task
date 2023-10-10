@@ -3,7 +3,6 @@ import Calendar from "./components/Calendar/Calendar";
 import { CalendarContextProvider } from './context/CalendarContext';
 
 function App() {
-
   return (
     <>
       <CalendarContextProvider>

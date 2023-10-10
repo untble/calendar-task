@@ -4,9 +4,12 @@ import { v4 as uuid } from 'uuid';
 
 export const CalendarContext = createContext({
   calendarPagesPerMonth: [],
-  createNewCalendarPage: (year: number, month: number) => {},
-  createEvent: (id: string, text: string, onChangeText, pageId: string, isReadOnly: boolean) => {},
-  currentCalendarPage: (pageId: string) => {},
+  createNewCalendarPage: (year: number, month: number) => {
+  },
+  createEvent: (id: string, text: string, onChangeText, pageId: string, isReadOnly: boolean) => {
+  },
+  currentCalendarPage: (pageId: string) => {
+  },
 });
 
 export const CalendarContextProvider: FC<PropsWithChildren> = (props) => {
@@ -15,15 +18,15 @@ export const CalendarContextProvider: FC<PropsWithChildren> = (props) => {
   const createNewCalendarPage = (year: number, month: number) => {
     const pageId = year + month;
     if (!calendarPagesPerMonth.find(p => p[pageId])) {
-      setCalendarPagesPerMonth([...calendarPagesPerMonth, {[pageId]: createDaysForCalendarView(year, month) }]);
+      setCalendarPagesPerMonth([...calendarPagesPerMonth, { [pageId]: createDaysForCalendarView(year, month) }]);
     }
     return pageId;
   };
 
   const currentCalendarPage = (pageId: string) => {
     const calendarPage = calendarPagesPerMonth.find(p => p[pageId]);
-    return calendarPage && calendarPage[pageId]
-  }
+    return calendarPage && calendarPage[pageId];
+  };
 
   const createEvent = (id, text, onChangeText, pageId, isReadOnly) => {
     const existingEvents = currentCalendarPage(pageId).find(d => d.id === id).events;
@@ -32,15 +35,14 @@ export const CalendarContextProvider: FC<PropsWithChildren> = (props) => {
       const newEvent = { id: uuid(), text, onChangeText, isReadOnly };
       setCalendarPagesPerMonth([
         ...calendarPagesPerMonth,
-        existingEvents.push(newEvent)
-      ])
+        existingEvents.push(newEvent),
+      ]);
     }
 
-  }
+  };
 
   const updateEvent = (id, eventId, updatedText, pageId) => {
-    const updatedEventForCurrentPage =
-      currentCalendarPage(pageId).map(d => {
+    currentCalendarPage(pageId).forEach(d => {
       if (d.id === id) {
         d.events = d.events.map(event => event.id === eventId ? { ...event, text: updatedText } : event);
       }
@@ -49,9 +51,8 @@ export const CalendarContextProvider: FC<PropsWithChildren> = (props) => {
 
     setCalendarPagesPerMonth([
       ...calendarPagesPerMonth,
-      updatedEventForCurrentPage
-    ])
-  }
+    ]);
+  };
 
   return <CalendarContext.Provider value={{
     createNewCalendarPage,
